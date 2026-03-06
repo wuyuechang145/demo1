@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动态</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 在现有的font-awesome链接下面添加 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<style>
+     body {
+      margin: 0;
+      padding: 0;
+      background-color: #F4F4F4; /* B站背景灰 */
+     
+    }
+    .header-container {
+      width: 1200px; /* 电脑端固定宽度，可修改 */
+      height: 100%;
+      margin: 0 auto; /* 水平居中 */
+      display: flex; /* Flex布局，子元素横向排列 */
+      align-items: center; /* 子元素垂直居中 */
+      justify-content: space-between; /* 左右两端对齐，中间自动填充 */
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-right: 40px; /* 与导航链接的间距 */
+    }
+
+    .logo i {
+      color: #FB7299; /* B站粉色 */
+      font-size: 28px;
+      margin-right: 8px;
+    }
+
+    .logo span {
+      font-size: 20px;
+      font-weight: bold;
+    }
+     .nav-links {
+      display: flex;
+      gap: 30px; /* 导航项之间的间距 */
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #666; /* 默认文字色 */
+      font-weight: 500;
+      height: 64px;
+      line-height: 64px; /* 垂直居中 */
+      box-sizing: border-box;
+      transition: all 0.3s; /*  hover 过渡效果 */
+    }
+
+    .nav-links a.nav-active {
+      color: #FB7299; /* 选中状态文字色 */
+      border-bottom: 2px solid #FB7299; /* 选中下划线 */
+    }
+
+    .nav-links a:hover {
+      color: #FB7299; /* hover 变色 */
+      transform: scale(1.2);
+    }
+      /* 搜索框容器 */
+    .search-box {
+      width: 300px; /* 搜索框宽度，可修改 */
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 20px; /* 圆角 */
+      padding-left: 36px; /* 给搜索图标留空间 */
+      padding-right: 40px; /* 给清空按钮留空间 */
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .search-box i.fa-search {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: #f1f1f1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-box button i {
+      color: #999;
+      font-size: 12px;
+    }
+    /* 右侧功能区 */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px; /* 功能项之间的间距 */
+    }
+
+    .header-actions a {
+      color: #666;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .header-actions .upload-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+  .user-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  /* 让头像上方的卡片不被遮挡 */
+  z-index: 1000;
+}
+
+/* 头像样式：圆形+边框 */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+/* 悬停头像时轻微放大 */
+.user-avatar:hover {
+  transform: scale(1.05);
+}
+
+/* 个人信息卡片：默认隐藏 */
+.user-card {
+  position: absolute;
+  top: calc(100% + 10px); /* 头像下方10px */
+  right: 0; /* 右对齐头像 */
+  width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 16px;
+  display: none; /* 默认隐藏 */
+  /* 卡片层级高于页面其他元素 */
+  z-index: 999;
+}
+/* 悬停头像时显示卡片 */
+.user-avatar-wrapper:hover .user-card {
+  display: block;
+}
+
+/* 卡片顶部：头像+用户名 */
+.card-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.card-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #f0f0f0;
+}
+.username {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+.member-tag {
+  display: inline-block;
+  background: #f759ab;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+/* 硬币/B币 */
+.card-assets {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #666;
+}
+.card-assets span {
+  margin: 0 8px;
+}
+
+/* 等级进度条 */
+.card-level {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+.progress-bar {
+  height: 3px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  margin: 0 8px;
+  flex: 1;
+}
+.progress {
+  height: 100%;
+  background: #f759ab;
+  border-radius: 3px;
+}
+.level-desc {
+  font-size: 12px;
+  color: #999;
+  margin: 8px 0 0 0;
+  text-align: center;
+}
+
+/* 关注/粉丝/动态统计 */
+.card-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.stat-item {
+  text-align: center;
+  transition: all 0.3s;
+}
+.stat-item:hover{
+  transform: scale(1.2);
+  color:blue;
+}
+.stat-item .num {
+  font-size: 18px;
+  font-weight: bold;
+  display: block;
+}
+.stat-item .label {
+  font-size: 12px;
+  color: #999;
+}
+.stat-item .label:hover{
+  transform: scale(1.2);
+  color:blue;
+}
+/* 功能菜单 */
+.card-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content:flex-start;
+  padding: 8px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.menu-item i {
+  margin-right: 8px;
+  color: #666;
+}
+.logout {
+  color: #f5222d;
+}
+.logout i {
+  color: #f5222d;
+}
+  /* 主盒子容器 */
+        .user-card-box {
+            width: 100%;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            margin-top: 40px;
+        }
+        
+        /* 顶部导航行 */
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        /* 左侧导航项 */
+        .nav-items-left {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 50px;
+            position: relative;
+        }
+        .nav-item:hover::after{
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: blue;
+}
+        .nav-item:hover .nav-text{
+            color: blue;
+        }
+        .nav-item:hover {
+            transform: translateY(-2px);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .nav-text {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 5px;
+            margin-left: 5px;
+        }
+        
+        /* 右侧搜索和按钮 */
+        .nav-items-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-right: 20px;
+        }
+        .action-right{
+          display: flex;
+          gap:20px;
+        }
+        .search-box {
+            position: relative;
+        }
+        
+        .search-input {
+            width: 180px;
+            padding: 8px 35px 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            border-color: #FB7299;
+        }
+        
+        .search-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+            font-size: 14px;
+        }
+        .search-icon:hover{
+            cursor: pointer;
+        }
+    .nav-right-items{
+        display: flex;
+        flex-direction: column;
+        margin: 0,auto;
+
+    }
+    .nav-right-items:hover .name,
+    .nav-right-items:hover .number{
+      cursor: pointer;
+      color:blue;
+    }
+    .name{
+      color: #999;
+      font-size: 16px;
+    }
+    .number{
+      font-size: 14px;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .main{
+        width:100%;
+        height: auto;
+        display: flex;
+        margin-top: 20px;
+       background-color: #F4F4F4; /* B站背景灰 */
+        justify-content: space-between;
+    }
+    .main-left{
+       width:70%;
+       height:auto;
+        background-color: #F4F4F4; /* B站背景灰 */
+    }
+    .main-left1{
+      display: flex;
+      background-color: white;
+      height:auto;
+      margin-bottom:20px;
+    }
+    .main-left2{
+      display: flex;
+      background-color: white;
+      height:autp
+    }
+    /* 头像样式：圆形+边框 */
+.main-idimg {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+  margin:30px;
+}
+.main-idimg:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+.creatorname{
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 20px;
+}
+.imgcontent{
+  display: flex;
+}
+ .video-thumbnail {
+            position: relative;
+            width: 400px;
+            height: 200px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            margin-top:20px;
+        }
+        
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        /* 模拟数据样式 */
+        .mock-thumbnail {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #555, #888);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .video-duration {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 12px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+      .imgdsp{
+         margin-top:20px;
+         display: flex;
+         flex-direction: column;
+         justify-content: space-between;
+         width:450px;
+         border:1px solid gray;
+         border-radius: 8px;
+         border-left: none;
+      }
+      .imgdsp-head{
+        margin-left: 10px;
+        margin-top:20px;
+      }
+      .imgdsp-bottom{
+        margin-left: 20px;
+      }
+      .imgdsp-bottom:hover{
+        color: blue;
+        cursor: pointer;
+      }
+    .main-right{
+        width:30%;
+        height: 100px;
+        background-color: white;
+
+    }
+    .personcard{
+        display: flex;
+        flex-direction: column;
+    
+    }
+    .person{
+        font-size: 14px;
+        font-weight: bold;
+        align-items: center;
+        margin-left:80px;
+        height:50px;
+        display: flex;
+        border-bottom: 1px solid #eee; /* 底部横线 */
+    }
+    .birth{
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        align-items: center;
+        height: 50px;
+        
+    }
+    .birth-left{
+        color:black;
+        margin: 0 auto;
+    }
+    .birth-right{
+        color:black;
+        margin:0 auto;
+
+    }
+     .comment{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap:30px;
+            margin-top: 15px;
+
+        }
+        
+        .icon-item {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+        }
+        
+        .icon-item:hover {
+            color: #00aeec; /* B站蓝色 */
+            transform: translateY(-2px);
+        }
+        
+        
+        .icon {
+            font-size: 20px;
+            margin-right: 5px;
+        }
+        
+        .count {
+            font-size: 14px;
+        }
+</style>
+<body>
+   <header>
+    <div class="header-container">
+      <!-- 左侧 Logo -->
+      <div class="logo">
+        <i class="fa fa-play-circle"></i>
+        <span>哔哩哔哩</span>
+      </div>
+
+      <!-- 中间导航链接 -->
+      <div class="nav-links">
+        <a href="#" class="nav-active">首页</a>
+        <a href="#">番剧</a>
+        <a href="#">直播</a>
+        <a href="#">游戏</a>
+        <a href="#">会员购</a>
+        <a href="#">漫画</a>
+      </div>
+
+      <!-- 搜索框 -->
+      <div class="search-box">
+        <input type="text" placeholder="搜索视频、番剧、UP主...">
+        <i class="fa fa-search"></i>
+        <button><i class="fa fa-times"></i></button>
+      </div>
+
+      <!-- 右侧功能区 -->
+      <div class="header-actions">
+        <a href="#"><i class="fa fa-bell-o"></i></a>
+        <a href="#" class="upload-btn"><i class="fa fa-upload"></i></a>
+        <div class="user-avatar-wrapper">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="用户头像" class="user-avatar">
+    <!-- 个人信息卡片（默认隐藏） -->
+    <div class="user-card">
+      <!-- 卡片顶部：头像+用户名+会员标识 -->
+      <div class="card-header">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="头像" class="card-avatar">
+          <h3 class="username">d仔d</h3>
+          <span class="member-tag">年度大会员</span>
+      </div>
+      <!-- 硬币/B币 -->
+      <div class="card-assets">
+        <span>硬币: 1248</span>
+        <span>BT币: 0</span>
+      </div>
+      <!-- 等级进度 -->
+      <div class="card-level">
+        <span >LV5</span>
+        <div class="progress-bar">
+          <div class="progress" style="width: 90%"></div>
+        </div>
+        <span>LV5</span>
+        <p class="level-desc">当前成长25995, 距离升级Lv.6还需要2805</p>
+      </div>
+      <!-- 关注/粉丝/动态 -->
+      <div class="card-stats">
+        <div class="stat-item">
+          <span class="num">0</span>
+          <span class="label">关注</span>
+        </div>
+        <div class="stat-item">
+          <span class="num">0</span>
+          <span class="label">粉丝</span>
+        </div>
+        <div class="stat-item">
+          <span class="num">0</span>
+          <a href="动态.html" target="_blank"><span class="label">动态</span></a>
+        </div>
+      </div>
+      <!-- 功能按钮 -->
+      <div class="card-menu">
+        <a href="#" class="menu-item">
+          <i class="fa fa-user-o"></i> 个人中心
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-upload"></i> 投稿管理
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-star-o"></i> 推荐服务
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-paint-brush"></i> 主题: 浅色
+        </a>
+        <a href="#" class="menu-item logout">
+          <i class="fa fa-sign-out"></i> 退出登录
+        </a>
+      </div>
+    </div>
+      </div>
+      </div>
+    </div>
+  </header>
+  <div class="user-card-box">
+        <!-- 顶部导航行 -->
+        <div class="nav-row">
+            <!-- 左侧导航 -->
+            <div class="nav-items-left">
+                <div class="nav-item ">
+                    <i class="fa fa-home nav-icon"></i>
+                    <span class="nav-text">主页</span>
+                </div>
+                
+                <div class="nav-item">
+                    <i class="fa fa-newspaper-o nav-icon"></i>
+                    <span class="nav-text">动态</span>
+                </div>
+                
+                <div class="nav-item">
+                    <i class="fa fa-upload nav-icon"></i>
+                    <span class="nav-text">投稿</span>
+                </div>
+                
+                <div class="nav-item">
+                    <i class="fa fa-folder nav-icon"></i>
+                    <span class="nav-text">合集与列表</span>
+                </div>
+                
+                <div class="nav-item">
+                    <i class="fa fa-star nav-icon"></i>
+                    <span class="nav-text">收藏</span>
+                </div>
+                
+                <div class="nav-item">
+                    <i class="fa fa-rss nav-icon"></i>
+                    <span class="nav-text">订阅</span>
+                </div>
+                <div class="search-box">
+                    <input type="text" class="search-input" placeholder="搜索视频和动态...">
+                    <i class="fa fa-search search-icon"></i>
+                </div>
+            </div>
+            
+            <!-- 右侧搜索和按钮 -->
+            <div class="nav-items-right">
+              <div class="action-right">    
+                  <div class="nav-right-items">
+                    <div class="name">关注数</div>
+                    <div class="number">45</div>
+                </div>
+                <div class="nav-right-items">
+                    <div class="name">粉丝数</div>
+                    <div class="number">776.8万</div>
+                </div>
+                <div class="nav-right-items">
+                    <div class="name">获赞数</div>
+                    <div class="number">1008万</div>
+                </div>
+                <div class="nav-right-items">
+                    <div class="name">播放数</div>
+                    <div class="number">9万</div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    <div class="main">
+         <div class="main-left">
+          <div class="main-left1">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="用户头像" class="main-idimg">
+        <div class="creator">
+            <div class="creatorname">BFT星光</div>
+            <div class="creatordata">10月18日·投稿了视频</div>
+            <div class="imgcontent">
+            <div class="video-thumbnail">
+               <img src="https://ts1.tc.mm.bing.net/th/id/OIP-C.jYiLqPKKxw7XZE1gcnPmngHaEK?w=270&h=211&c=8&rs=1&qlt=90&r=0&o=6&cb=ucfimg1&dpr=1.3&pid=3.1&rm=2&ucfimg=1" alt="视频">
+                <div class="mock-thumbnail">好严格的老粉</div>
+                <div class="video-duration">02:23</div>
+            </div>
+            <div class="imgdsp">
+              <div class="imgdsp-head">奉孝不才,一轮10牌</div>
+              <div class="imgdsp-bottom">
+                <i class="fa fa-folder nav-icon"></i>173.4万  <i class="fa fa-star nav-icon"></i>4402</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="icon-item" onclick="increaseCount('sharecount')">
+              <i class="fas fa-share-alt icon"></i>
+              <span class="count" id="sharecount">4614</span>
+            </div>
+            <div class="icon-item" onclick="increaseCount('commentcount')">
+              <i class="far fa-comment icon"></i>
+              <span class="count" id="commentcount">449</span>
+            </div>
+            <div class="icon-item" onclick="increaseCount('likecount')">
+              <i class="fas fa-thumbs-up icon"></i>
+              <span class="count" id="likecount">3000</span>
+            </div>
+        </div>
+          </div>
+          </div>
+           <div class="main-left2">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="用户头像" class="main-idimg">
+        <div class="creator">
+            <div class="creatorname">BFT星光</div>
+            <div class="creatordata">12月12日·投稿了视频</div>
+            <div class="imgcontent">
+            <div class="video-thumbnail">
+               <img src="https://ts1.tc.mm.bing.net/th/id/OIP-C._Li4LCYNdf0Djwk13ckigQHaIu?w=160&h=211&c=8&rs=1&qlt=90&r=0&o=6&cb=ucfimg1&dpr=1.3&pid=3.1&rm=2&ucfimg=1" alt="视频">
+                <div class="mock-thumbnail">王者牢九门</div>
+                <div class="video-duration">03:50</div>
+            </div>
+            <div class="imgdsp">
+              <div class="imgdsp-head">王者牢九门</div>
+              <div class="imgdsp-bottom">
+                <i class="fa fa-folder nav-icon"></i>17.4万  <i class="fa fa-star nav-icon"></i>1232</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="icon-item">
+              <i class="fas fa-share-alt icon"></i>
+              <span class="count">414</span>
+            </div>
+            <div class="icon-item">
+              <i class="far fa-comment icon"></i>
+              <span class="count">32</span>
+            </div>
+            <div class="icon-item">
+              <i class="fas fa-thumbs-up icon"></i>
+              <span class="count">128</span>
+            </div>
+        </div>
+          </div>
+          </div>
+        </div>
+        <div class="main-right">
+            <div class="personcard">
+                <div class="person">个人资料</div>
+                <div class="birth">
+                    <div class="birth-left">uid2242442</div>
+                    <div class="birth-right">生日:01-01</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+       function increaseCount(elementId) {
+            const countElement = document.getElementById(elementId);
+            let currentCount = parseInt(countElement.textContent);
+            currentCount++;
+            countElement.textContent = currentCount;
+       }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>b站</title>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 在现有的font-awesome链接下面添加 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+</head>
+<style>
+    /* 所有现有CSS代码保持不变 */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #F4F4F4; /* B站背景灰 */
+     
+    }
+    /* ================== 登录弹窗样式 ================== */
+.login-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.login-modal.show {
+  display: flex;
+}
+
+.login-container {
+  width: 400px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 30px;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.login-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 24px;
+}
+
+.close-btn {
+  font-size: 28px;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #FB7299;
+}
+
+/* 选项卡 */
+.login-tabs {
+  display: flex;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  cursor: pointer;
+  color: #666;
+  font-size: 16px;
+  transition: all 0.3s;
+  position: relative;
+}
+
+.tab.active {
+  color: #FB7299;
+  font-weight: bold;
+}
+
+.tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #FB7299;
+}
+
+/* 选项卡内容 */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* 二维码登录 */
+.qrcode-section {
+  text-align: center;
+  padding: 30px 0;
+}
+
+.qrcode-placeholder {
+  width: 200px;
+  height: 200px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 20px;
+  color: #999;
+}
+
+.qrcode-placeholder i {
+  font-size: 80px;
+  margin-bottom: 10px;
+  color: #ccc;
+}
+
+.tip {
+  color: #999;
+  font-size: 14px;
+  margin: 20px 0;
+}
+
+/* 输入框样式 */
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 40px 12px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.input-group input:focus {
+  border-color: #FB7299;
+  outline: none;
+}
+
+.input-group i {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+/* 手机号输入特殊处理 */
+.phone-input {
+  display: flex;
+  gap: 10px;
+}
+
+.phone-input select {
+  width: 80px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.code-input {
+  display: flex;
+  gap: 10px;
+}
+
+.code-input input {
+  flex: 1;
+}
+
+.get-code-btn {
+  padding: 12px 20px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.3s;
+}
+
+.get-code-btn:hover {
+  background-color: #eee;
+}
+
+.get-code-btn.disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* 忘记密码 */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.forgot-password a {
+  color: #FB7299;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+.simple-popup {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  min-width: 120px;}
+.simple-popup div {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.simple-popup div:hover {
+  background: #f5f5f5;
+}
+/* 登录按钮 */
+.login-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #FB7299;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 20px;
+}
+
+.login-btn:hover {
+  background-color: #ff85ad;
+}
+.login-btn.disabled{
+  
+  cursor: not-allowed;
+}
+
+/* 第三方登录 */
+.other-login {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.other-login p {
+  color: #999;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.other-login p::before,
+.other-login p::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 30%;
+  height: 1px;
+  background-color: #eee;
+}
+
+.other-login p::before {
+  left: 0;
+}
+
+.other-login p::after {
+  right: 0;
+}
+
+.social-login {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.social-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.social-btn.wechat:hover {
+  border-color: #07C160;
+  color: #07C160;
+}
+
+.social-btn.weibo:hover {
+  border-color: #E6162D;
+  color: #E6162D;
+}
+
+.social-btn.qq:hover {
+  border-color: #12B7F5;
+  color: #12B7F5;
+}
+
+/* 协议声明 */
+.agreement {
+  font-size: 12px;
+  color: #999;
+  text-align: center;
+  line-height: 1.5;
+  margin-top: 20px;
+}
+
+.agreement a {
+  color: #FB7299;
+  text-decoration: none;
+}
+
+.agreement a:hover {
+  text-decoration: underline;
+}
+
+/* 错误提示 */
+.error-message {
+  color: #ff3860;
+  font-size: 12px;
+  margin-top: 5px;
+  display: none;
+}
+
+.input-group.error input {
+  border-color: #ff3860;
+}
+
+.input-group.error .error-message {
+  display: block;
+}
+
+/* 响应式调整 */
+@media (max-width: 480px) {
+  .login-container {
+    width: 90%;
+    margin: 0 20px;
+    padding: 20px;
+  }
+  
+  .social-login {
+    flex-direction: column;
+  }
+}
+  .header-section{
+    position: relative;  /* 关键：创建定位上下文 */
+    width: 100%;
+    height: 155px;      /* 头图高度 */
+  }
+  #parallax-banner {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          z-index: 1;        /* 较低的层级 */
+        }
+ .header-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%; /* 电脑端固定宽度，可修改 */
+      height: auto;
+       z-index: 2;  
+      margin: 0 auto; /* 水平居中 */
+      display: flex; /* Flex布局，子元素横向排列 */
+      align-items: center; /* 子元素垂直居中 */
+      justify-content: space-evenly; /* 左右两端对齐，中间自动填充 */
+      gap:10px;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+      margin-left: 10px; /* 与导航链接的间距 */
+    }
+
+    .logo i {
+      color: #FB7299; /* B站粉色 */
+      font-size: 28px;
+      margin-right: 8px;
+    }
+
+    .logo span {
+      font-size: 20px;
+      font-weight: bold;
+    }
+     .nav-links {
+      display: flex;
+      gap: 30px; /* 导航项之间的间距 */
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: #666; /* 默认文字色 */
+      font-weight: 500;
+      height: 64px;
+      line-height: 64px; /* 垂直居中 */
+      box-sizing: border-box;
+      transition: all 0.3s; /*  hover 过渡效果 */
+    }
+
+    .nav-links a.nav-active {
+      color: #FB7299; /* 选中状态文字色 */
+      border-bottom: 2px solid #FB7299; /* 选中下划线 */
+    }
+
+    .nav-links a:hover {
+      color: #FB7299; /* hover 变色 */
+      transform: scale(1.2);
+    }
+      /* 搜索框容器 */
+    .search-box {
+      width: 300px; /* 搜索框宽度，可修改 */
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      height: 40px;
+      border: 1px solid #ddd;
+      border-radius: 20px; /* 圆角 */
+      padding-left: 36px; /* 给搜索图标留空间 */
+      padding-right: 40px; /* 给清空按钮留空间 */
+      outline: none;
+      box-sizing: border-box;
+    }
+
+    .search-box i.fa-search {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 16px;
+    }
+
+    .search-box button {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 24px;
+      height: 24px;
+      border: none;
+      border-radius: 50%;
+      background: #f1f1f1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-box button i {
+      color: #999;
+      font-size: 12px;
+    }
+    /* 右侧功能区 */
+    .header-actions {
+      display: flex;
+      align-items: center;
+    
+      gap: 24px; /* 功能项之间的间距 */
+    }
+
+    .header-actions a {
+      color: #666;
+      font-size: 20px;
+      text-decoration: none;
+    }
+
+    .header-actions .upload-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #f4f4f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+  .user-avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  /* 让头像上方的卡片不被遮挡 */
+  z-index: 1000;
+}
+
+/* 头像样式：圆形+边框 */
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: transform 0.2s;
+}
+/* 悬停头像时轻微放大 */
+.user-avatar:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}
+
+/* 个人信息卡片：默认隐藏 */
+.user-card {
+  position: absolute;
+  top: calc(100% + 10px); /* 头像下方10px */
+  right: 0; /* 右对齐头像 */
+  width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  padding: 16px;
+  display: none; /* 默认隐藏 */
+  /* 卡片层级高于页面其他元素 */
+  z-index: 999;
+}
+/* 悬停头像时显示卡片 */
+.user-avatar-wrapper:hover .user-card {
+  display: block;
+}
+
+/* 卡片顶部：头像+用户名 */
+.card-header {
+  text-align: center;
+  margin-bottom: 12px;
+}
+.card-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #f0f0f0;
+}
+.username {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0;
+}
+.member-tag {
+  display: inline-block;
+  background: #f759ab;
+  color: #fff;
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+/* 硬币/B币 */
+.card-assets {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  color: #666;
+}
+.card-assets span {
+  margin: 0 8px;
+}
+
+/* 等级进度条 */
+.card-level {
+  display: flex;
+  align-items: center;
+  color: #666;
+}
+.progress-bar {
+  height: 3px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  margin: 0 8px;
+  flex: 1;
+}
+.progress {
+  height: 100%;
+  background: #f759ab;
+  border-radius: 3px;
+}
+.level-desc {
+  font-size: 12px;
+  color: #999;
+  margin: 8px 0 0 0;
+  text-align: center;
+}
+
+/* 关注/粉丝/动态统计 */
+.card-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.stat-item {
+  text-align: center;
+  transition: all 0.3s;
+}
+.stat-item:hover{
+  transform: scale(1.2);
+  color:blue;
+}
+.stat-item .num {
+  font-size: 18px;
+  font-weight: bold;
+  display: block;
+}
+.stat-item .label {
+  font-size: 12px;
+  color: #999;
+}
+.stat-item .label:hover{
+  transform: scale(1.2);
+  color:blue;
+}
+/* 功能菜单 */
+.card-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content:flex-start;
+  padding: 8px 0;
+  color: #333;
+  text-decoration: none;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+.menu-item:last-child {
+  border-bottom: none;
+}
+.menu-item i {
+  margin-right: 8px;
+  color: #666;
+}
+.logout {
+  color: #f5222d;
+}
+.logout i {
+  color: #f5222d;
+}
+#app {
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+  min-width: 1000px;
+  min-height: 155px;
+  height: 10vw;
+  max-height: 240px;
+}
+
+.layer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.parallax-img {
+  user-select: none;
+  pointer-events: none;
+}
+
+.nav {
+        width:100%;
+        height: 100px;
+        display: flex;
+        justify-content: flex-start;
+    
+    }
+    .nav-left{
+        margin-left:40px;
+        display: flex;
+        flex-direction: column;
+    }
+    .nav-left:hover{
+      cursor: pointer;
+    }
+    .nav-left .img{
+        font-size: 40px;
+    }
+    .nav-left.typeface
+    {
+        font-size:40px;
+    }
+.buttonclick{
+    margin-left:40px;
+    display: flex;
+    flex-direction: column;
+    width:70%;
+
+
+}
+.button1{
+    display: flex;
+    margin:5px,auto
+
+}
+.category-btn{
+    width:80px;
+    height:30px;
+    border-radius: 20%;
+    border:solid #F4F4F4;
+    margin:10px;
+
+}
+.category-btn:hover{
+    font-weight: bold;
+    cursor: pointer;
+   
+}
+.icon-box {
+      width: 300px; /* 盒子宽度，可根据需求调整 */
+      padding: 15px;
+      border: 1px solid #eee;
+    }
+.icon-row {
+      display: flex;
+      align-items: center;
+      gap: 20px; /* 按钮之间的间距 */
+      margin-bottom: 10px;
+    }
+    /* 单个按钮样式 */
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    /* 图标样式（与示例图匹配） */
+    .icon-btn i {
+      margin-right: 6px; /* 图标与文字的间距 */
+      font-size: 16px;
+    }
+    /* 第二行按钮（可选差异化样式） */
+    .icon-row:nth-child(2) .icon-btn i {
+      color: #666; /* 第二行图标颜色稍浅 */
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background-color:#F4F4F4 ;
+    }
+    
+    /* 关键修改：网格布局 */
+    .media-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr; /* 4列 */
+      grid-template-rows: repeat(2, 1fr);     /* 只有2行 */
+      gap: 20px;
+      height: 500px; /* 增加高度以容纳文字 */
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    /* 在现有CSS中添加这些样式（可以放在.media-grid附近） */
+
+/* Swiper容器 */
+.swiper-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  position: relative;
+}
+
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  position: relative;
+}
+.swiper-slide:hover{
+        cursor: pointer;
+        animation:jump 0.5s ease;
+      }
+.swiper-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit:fill;
+  display: block;
+}
+
+/* Swiper导航按钮 */
+.swiper-button-prev,
+.swiper-button-next {
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+  font-size: 16px;
+}
+
+/* Swiper分页器 */
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.swiper-pagination-bullet-active {
+  background: white;
+}
+
+/* 修改大图容器，确保轮播图正常显示 */
+.large-item {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  border-radius: 8px;
+  background-color: #F4F4F4; /* B站背景灰 */
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  height: 100%;
+}
+    
+    
+    /* 小图区域 */
+    .small-item {
+      border-radius: 6px;
+      background-color: #F4F4F4; /* B站背景灰 */
+      display: flex;
+      flex-direction: column; /* 改为垂直排列 */
+    }
+    .threedot{
+      display:none;
+      position: relative;
+    }
+.small-item:hover .threedot{
+  display: inline-flex;
+}
+.large-item:hover .threedot{
+  display: inline-flex;
+}
+.popup{
+ display: none;
+ height: auto;
+ padding: 0;
+    position: absolute;
+    width:100px;
+    height: auto;
+    min-width: max-content; /* 根据内容自动调整 */
+    top: 100%;     /* 在三个点下方 */
+    right: 0;      /* 改为右边对齐 */
+   background-color: #F4F4F4; /* B站背景灰 */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    white-space: nowrap;
+    z-index: 1000;
+
+}
+.threedot:hover+ .popup{
+  display:block;
+}
+.popup button {
+    display:block;
+    width: 100%;
+    height: auto;
+    box-sizing: border-box;  /* padding和border计入宽度 */
+    padding: 2px 3px;
+    text-align: left;
+    border: none;
+    background: white;
+    text-align: center;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 0;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.popup:hover {
+    background-color: #f5f5f5;
+    display: block !important;
+
+}
+    /* 图片容器 */
+    .image-container {
+      flex: 1; /* 图片占据大部分空间 */
+      overflow: hidden;
+      border-radius: 10px;
+    }
+     @keyframes jump{
+      0%{
+        transform:translateY(0);
+      }
+      50%{
+        transform: translateY(-5px);
+      }
+      100%{
+        transform: translateY(0);
+      }
+    }
+     .image-container:hover{
+        cursor: pointer;
+        animation:jump 0.5s ease;
+      }
+    .image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    /* 文字描述区域 */
+    .description {
+
+      padding: 12px 10px;
+      border-top: 1px solid #eee;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.4;
+      overflow: visible;
+    }
+    
+    /* 大图的文字样式可以不同 */
+    .large-item .description {
+      font-size: 16px;
+      padding: 15px;
+      font-weight: 600;
+    }
+    
+    /* 小图的文字样式 */
+    .small-item .description {
+      font-size: 13px;
+      color: #666;
+    }
+    
+    /* 可以添加一些额外的样式类 */
+    .video-title {
+      position: relative;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      transition: all,0.2s;
+      overflow: visible;
+    }
+    .video-title:hover{
+      cursor: pointer;
+      color:blue;
+    }
+    
+    .video-info {
+      font-size: 12px;
+      color: #888;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 5px;
+      transition: all,0.2s;
+    }
+    .video-info:hover{
+      cursor: pointer;
+      color:blue;
+    }
+    
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      
+      .media-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        height: auto;
+        gap: 15px;
+      }
+      
+      .large-item {
+        grid-column: 1;
+        grid-row: 1;
+        height: auto;
+      }
+      
+      .small-item {
+        height: auto;
+      }
+      
+      .image-container {
+        height: 200px; /* 在手机上固定图片高度 */
+      }
+      .large-item .image-container {
+        height: 250px;
+      }
+    }
+     .foot {
+      max-width: 1200px;
+      margin: 0 auto;
+      min-height: 100vh;
+      margin-top: 50px;
+    }
+    .video-container {
+      display: grid;
+     grid-template-columns: repeat(5, 250px); /* 固定5列，每列250px */
+      gap: 20px; /* 视频卡片间距 */
+      margin-bottom: 40px;
+      justify-content: center;
+    }
+  
+    .video-card {
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+    .video-card:hover {
+      transform: translateY(-5px);
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .video-card img {
+      width: 100%;
+      height: 130px;
+      object-fit: cover;
+      display: block;
+    }
+  .video-loadinginfo:hover .threedot{
+  display: inline-flex;
+}
+    .video-loadinginfo {
+      padding: 8px;
+    }
+    .video-loadingtitle {
+      position: relative;
+      font-weight: 600;
+      margin-bottom: 5px;
+      display: flex;
+      justify-content: space-between;
+      transition: all,0.2s;
+    }
+    .video-meta {
+      font-size: 11px;
+      color: #999;
+      display: flex;
+      justify-content:flex-start;
+      margin-top: 5px;
+    }
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #666;
+      display: none;
+    }
+    .loading.active {
+      display: block;
+    }
+    /* 加载动画 */
+    .loader {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid #ddd;
+      border-top-color: #666;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 10px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .no-more {
+      text-align: center;
+      padding: 25px;
+      color: #999;
+      font-size: 14px;
+      display: none;
+    }
+    .no-more.active {
+      display: block;
+    }
+    
+    /* ================== 新增的右侧固定模块样式 ================== */
+    .right-fixed-module {
+      position: fixed;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%) translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+      opacity: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+    
+    .right-fixed-module.visible {
+      transform: translateY(-50%) translateX(0);
+      opacity: 1;
+    }
+    
+    .fixed-btn {
+      width: 50px;
+      height: 50px;
+      background-color: #fff;
+      border: 1px solid #eee;
+      border-radius: 25px 0 0 25px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    .fixed-btn:hover {
+      background-color: #f5f5f5;
+      transform: translateX(-5px);
+    }
+    
+    .fixed-btn i {
+      color: #666;
+      font-size: 20px;
+    }
+    
+    .fixed-btn.to-top i {
+      color: #FB7299; /* B站粉色 */
+    }
+    
+    /* hover后显示的隐藏按钮 */
+    .hidden-buttons {
+      display: none;
+      flex-direction: column;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+    
+    .fixed-btn:hover .hidden-buttons {
+      display: flex;
+      position: absolute;
+      right: 50px;
+      top: 0;
+      animation: slideInRight 0.3s ease;
+    }
+    
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .hidden-btn {
+      width: 50px;
+      height: 50px;
+      background-color: #fff;
+      border: 1px solid #eee;
+      border-radius: 25px 0 0 25px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .hidden-btn:hover {
+      background-color: #f5f5f5;
+      transform: translateX(-5px);
+    }
+    
+    .hidden-btn i {
+      color: #666;
+      font-size: 18px;
+    }
+    
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .video-container {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+    @media (max-width: 900px) {
+      .video-container {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      /* 在手机端隐藏右侧固定模块 */
+      .right-fixed-module {
+        display: none;
+      }
+    }
+    @media (max-width: 600px) {
+      .video-container {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .video-card img {
+        height: 120px;
+      }
+    }
+</style>
+<body>
+    <header>
+    <div class="header-section">
+      <div class="header-container">
+      <!-- 左侧 Logo -->
+      <div class="logo">
+        <i class="fa fa-play-circle"></i>
+        <span>哔哩哔哩</span>
+      </div>
+
+      <!-- 中间导航链接 -->
+      <div class="nav-links">
+        <a href="#" class="nav-active">首页</a>
+        <a href="#">番剧</a>
+        <a href="#">直播</a>
+        <a href="#">游戏</a>
+        <a href="#">会员购</a>
+        <a href="#">漫画</a>
+      </div>
+
+      <!-- 搜索框 -->
+      <div class="search-box">
+        <input type="text" placeholder="搜索视频、番剧、UP主...">
+        <i class="fa fa-search"></i>
+        <button><i class="fa fa-times"></i></button>
+      </div>
+
+      <!-- 右侧功能区 -->
+      <div class="header-actions">
+        <a href="#"><i class="fa fa-bell-o"></i></a>
+        <a href="#" class="upload-btn"><i class="fa fa-upload"></i></a>
+        <div class="user-avatar-wrapper">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="用户头像" class="user-avatar">
+    <!-- 个人信息卡片（默认隐藏） -->
+    <div class="user-card">
+      <!-- 卡片顶部：头像+用户名+会员标识 -->
+      <div class="card-header">
+        <img src="https://tse3-mm.cn.bing.net/th/id/OIP-C.qd74pf68Xcqm1J1gd6kqNAHaKe?w=202&h=286&c=7&r=0&o=7&cb=ucfimg2&dpr=1.3&pid=1.7&rm=3&ucfimg=1" alt="头像" class="card-avatar">
+          <h3 class="username">d仔d</h3>
+          <span class="member-tag">年度大会员</span>
+      </div>
+      <!-- 硬币/B币 -->
+      <div class="card-assets">
+        <span>硬币: 1248</span>
+        <span>BT币: 0</span>
+      </div>
+      <!-- 等级进度 -->
+      <div class="card-level">
+        <span >LV5</span>
+        <div class="progress-bar">
+          <div class="progress" style="width: 90%"></div>
+        </div>
+        <span>LV5</span>
+        <p class="level-desc">当前成长25995, 距离升级Lv.6还需要2805</p>
+      </div>
+      <!-- 关注/粉丝/动态 -->
+      <div class="card-stats">
+        <div class="stat-item">
+          <span class="num">0</span>
+          <span class="label">关注</span>
+        </div>
+        <div class="stat-item">
+          <span class="num">0</span>
+          <span class="label">粉丝</span>
+        </div>
+        <div class="stat-item">
+          <span class="num">0</span>
+          <a href="动态.html" target="_blank"><span class="label">动态</span></a>
+        </div>
+      </div>
+      <!-- 功能按钮 -->
+      <div class="card-menu">
+        <a href="#" class="menu-item">
+          <i class="fa fa-user-o"></i> 个人中心
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-upload"></i> 投稿管理
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-star-o"></i> 推荐服务
+        </a>
+        <a href="#" class="menu-item">
+          <i class="fa fa-paint-brush"></i> 主题: 浅色
+        </a>
+        <a href="#" class="menu-item logout">
+          <i class="fa fa-sign-out"></i> 退出登录
+        </a>
+      </div>
+    </div>
+      </div>
+      </div>
+        <button style="background-color:#12B7F5;border:1px solid white;width: 45px;
+        height: 45px;border-radius: 50%; "><a href="#" id="loginBtn" style="text-decoration: none; color:#f5f5f5"> 登录</a></button>
+    </div>
+    <div id="parallax-banner">
+            <!-- 头图视差效果 -->
+          <div id="app">loading...</div>
+        </div>
+    </div>
+  </header>
+
+ <div class="nav">
+        <div class="nav-left">
+            <div class="img"> <i class="fa fa-star-o"></i></div>
+          <div class="typeface">动态</div>
+        </div>
+    <div class="nav-left">
+            <div class="img">  <i class="fa fa-paint-brush"></i></div>
+          <div class="typeface">热门</div>
+    </div>
+    <div class="buttonclick">
+        <div class="button1">
+          <button class="category-btn">番剧</button>
+        <button class="category-btn">国创</button>
+        <button class="category-btn">综艺</button>
+        <button class="category-btn">动画</button>
+        <button class="category-btn">鬼畜</button>
+        <button class="category-btn">舞蹈</button>
+        <button class="category-btn">娱乐</button>
+        <button class="category-btn">科技索玛</button>
+        <button class="category-btn">美食</button>
+        <button class="category-btn">汽车</button>
+        <button class="category-btn">体育运动</button>
+        </div>
+        <div class="button1">
+        <button class="category-btn">电影</button>
+        <button class="category-btn">电视剧</button>
+        <button class="category-btn">纪录片</button>
+        <button class="category-btn">游戏</button>
+        <button class="category-btn">音乐</button>
+        <button class="category-btn">影视</button>
+        <button class="category-btn">知识</button>
+        <button class="category-btn">资讯</button>
+        <button class="category-btn">小剧场</button>
+        <button class="category-btn">时尚美妆</button>
+        <button class="category-btn">更多></button>
+        </div>
+    </div>
+    <div class="icon-box">
+    <!-- 第一行按钮 -->
+    <div class="icon-row">
+      <a href="#" class="icon-btn">
+        <i class="fa fa-th-large"></i> 专栏
+      </a>
+      <a href="#" class="icon-btn">
+        <i class="fa fa-flag"></i> 活动
+      </a>
+      <a href="#" class="icon-btn">
+        <i class="fa fa-comments"></i> 社区中心
+      </a>
+    </div>
+    <!-- 第二行按钮 -->
+    <div class="icon-row">
+      <a href="#" class="icon-btn">
+        <i class="fa fa-television"></i> 直播
+      </a>
+      <a href="#" class="icon-btn">
+        <i class="fa fa-graduation-cap"></i> 课堂
+      </a>
+      <a href="#" class="icon-btn">
+        <i class="fa fa-music"></i> 新歌热榜
+      </a>
+    </div>
+  </div>
+</div>
+ <div class="container">
+    <div class="media-grid">
+      <!-- 大图 -->
+     <div class="large-item">
+  <!-- Swiper轮播图 -->
+  <div class="swiper-container">
+    <div class="swiper">
+      <div class="swiper-wrapper">
+        <!-- 轮播图1 -->
+        <div class="swiper-slide">
+          <img src="https://i0.hdslb.com/bfs/banner/27688af4c8ef733bd744e0cce59a350cff2f0fb2.png@976w_550h_!web-home-carousel-cover.avif" 
+          alt="轮播图1"  referrerpolicy="no-referrer">
+        </div>
+        <!-- 轮播图2 -->
+        <div class="swiper-slide">
+          <img src="https://i0.hdslb.com/bfs/banner/1ade4c9ce368e88b89610d93d11bfa98280598c5.jpg@976w_550h_!web-home-carousel-cover.avif" 
+          alt="轮播图2"  referrerpolicy="no-referrer">
+        </div>
+        <!-- 轮播图3 -->
+        <div class="swiper-slide">
+          <img src="https://i0.hdslb.com/bfs/banner/bea0c8224fec8255cc7b976c20350dac52882dca.jpg@976w_550h_!web-home-carousel-cover.avif?mirror_report_swipe=1" 
+          alt="轮播图3"  referrerpolicy="no-referrer">
+        </div>
+      </div>
+      <!-- 点分页器 -->
+      <div class="swiper-pagination"></div>
+      <!-- 导航按钮 -->
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    </div>
+  </div>
+  
+  <!-- 视频描述区域 -->
+  <div class="description">
+    <div class="video-title">【热门视频】2024年度最佳科技盘点,这些黑科技太震撼了！
+       <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+    </div>
+    <div class="video-info">
+      <span>科技频道</span>
+      <span>▶️ 125万播放</span>
+    </div>
+  </div>
+</div>
+      
+      <!-- 小图1 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i0.hdslb.com/bfs/archive/dc10fb37a64c1ee4dbaadeab6091b71983a4a26b.jpg@672w_378h_1c_!web-home-common-cover.avif" 
+          alt="小图1" referrerpolicy="no-referrer"  >
+        </div>
+        <div class="description">
+          <div class="video-title"><span>台词回投稿0118</span>
+        <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div></div>
+          <div class="video-info">
+            <span>
+        小三角的和弦· 17小时前</span>
+            <span>▶️ 48万</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 小图2 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i1.hdslb.com/bfs/archive/0bf5e3dd3563543cd656ffcb9850b0b1be9f1623.jpg@672w_378h_1c_!web-home-common-cover.avif" alt="小图2" referrerpolicy="no-referrer">
+        </div>
+        <div class="description">
+          <div class="video-title">全网首发!免费、免魔法使用GPT-5.2和Gemini 3 Pro(附Nano Ba)
+            <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+          </div>
+          <div class="video-info">
+            <span>晓晓要毕业· 01-04</span>
+            <span>▶️ 89万</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 小图3 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i0.hdslb.com/bfs/archive/a86d5b40c8ca44db75fb020b40acc6f591e40493.jpg@672w_378h_1c_!web-home-common-cover.avif" alt="小图3"referrerpolicy="no-referrer">
+        </div>
+        <div class="description">
+          <div class="video-title">计算机本科毕业半年找不到工作，未来该怎么办？
+            <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+          </div>
+          <div class="video-info">
+            <span>冰叔说· 2025-12-23</span>
+            <span>▶️ 112万</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 小图4 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i0.hdslb.com/bfs/sycp/sanlian/image/7bbe29dfeb9e44d186ec474ee40fe7d2.jpeg@672w_378h_1c_!web-home-common-cover.avif" 
+          alt="小图4"  referrerpolicy="no-referrer">
+        </div>
+        <div class="description">
+          <div class="video-title">建议缺钱的大学生一定要尝试的小众暴利副业，因为真的很香
+            <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+          </div>
+          <div class="video-info">
+            <span>今天学建模了呱 · 01-15</span>
+            <span>▶️ 76万</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 小图5 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i2.hdslb.com/bfs/archive/324df0efdc92d6fdbb5e9d496176909eec8d06b9.jpg@672w_378h_1c_!web-home-common-cover.avif" 
+          alt="小图5"  referrerpolicy="no-referrer">
+        </div>
+        <div class="description">
+          <div class="video-title">【2025下半年最佳台词】TOP10,我尚未全力一搏！
+            <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+          </div>
+          <div class="video-info">
+            <span>Lyell莱尔 · 01-14</span>
+            <span>▶️ 94万</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- 小图6 -->
+      <div class="small-item">
+        <div class="image-container">
+          <img src="https://i1.hdslb.com/bfs/archive/ea166212620a6d2e7bab4c62ce364b91d447fb7b.jpg@672w_378h_1c_!web-home-common-cover.avif" 
+          alt="小图6"  referrerpolicy="no-referrer">
+        </div>
+        <div class="description">
+          <div class="video-title">【2026KPL春季赛】1月17日 成都AG超玩会 vs 上海EDG.M
+            <span class="threedot">⋮</span>
+        <div class="popup">
+        <button>不感兴趣</button>
+        <button>不想看up主</button>
+    </div>
+          </div>
+          <div class="video-info">
+            <span>
+            哔哩哔哩王者荣耀赛事· 01-17
+          </span>
+            <span>▶️ 56万</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+<!-- 右侧导航栏 -->
+  <div class="right-fixed-module" id="rightFixedModule" >
+    <div class="fixed-btn">
+      <i class="fa fa-arrow-up to-top"></i>
+      <!-- hover后显示的隐藏按钮 -->
+      <div class="hidden-buttons">
+        <div class="hidden-btn" title="新版反馈">
+          <i class="fa fa-commenting-o"></i>
+        </div>
+        <div class="hidden-btn" title="客服">
+          <i class="fa fa-headphones"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <footer class="foot">
+    <div class="video-container" id="videoContainer"></div>
+    <div class="loading" id="loading">
+      正在加载更多视频
+      <div class="loader"></div>
+    </div>
+    <div class="no-more" id="noMore">没有更多视频了</div>
+  </footer>
+<!-- 登录弹窗 -->
+<div class="login-modal" id="loginModal">
+  <div class="login-container">
+    <div class="login-header">
+      <h2>登录</h2>
+      <span class="close-btn" id="closeLogin">&times;</span>
+    </div>
+    
+    <!-- 选项卡 -->
+    <div class="login-tabs">
+      <div class="tab active" data-tab="qrcode">扫码登录</div>
+      <div class="tab" data-tab="password">密码登录</div>
+      <div class="tab" data-tab="sms">短信登录</div>
+    </div>
+    
+    <!-- 二维码登录 -->
+    <div class="tab-content active" id="qrcodeTab">
+      <div class="qrcode-section">
+        <div class="qrcode-placeholder">
+          <i class="fa fa-qrcode"></i>
+          <p>请使用哔哩哔哩客户端扫码登录</p>
+        </div>
+        <p class="tip">请使用哔哩哔哩客户端扫码登录或扫码下载APP</p>
+      </div>
+    </div>
+    
+    <!-- 密码登录 -->
+    <div class="tab-content" id="passwordTab">
+      <form id="passwordForm">
+        <div class="input-group">
+          <input type="text" id="username" placeholder="请输入账号" required>
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="input-group">
+          <input type="password" id="password" placeholder="请输入密码" required>
+          <i class="fa fa-lock"></i>
+        </div>
+        <div class="forgot-password">
+          <a href="#" onclick="togglePopup(event)">忘记密码？</a>
+          <div class="simple-popup" id="simplePopup">
+         <div onclick="selectOption('短信登录')">发送短信快捷登录</div>
+        <div onclick="selectOption('正在跳转')">去找回密码</div>
+       </div>
+        </div>
+        <button type="submit" class="login-btn">登录</button>
+      </form>
+    </div>
+    
+    <!-- 短信登录 -->
+    <div class="tab-content" id="smsTab">
+      <form id="smsForm">
+        <div class="input-group phone-input">
+          <select id="countryCode">
+            <option value="+86">+86</option>
+            <option value="+852">+852</option>
+            <option value="+853">+853</option>
+            <option value="+886">+886</option>
+          </select>
+          <input type="text" id="phone" placeholder="请输入手机号" required>
+        </div>
+        <div class="input-group code-input">
+          <input type="text" id="smsCode" placeholder="请输入验证码" required>
+          <button type="button" class="get-code-btn" id="getCodeBtn">获取验证码</button>
+        </div>
+        <button type="submit" class="login-btn">登录/注册</button>
+      </form>
+    </div>
+    
+    <!-- 第三方登录 -->
+    <div class="other-login">
+      <p>其他方式登录</p>
+      <div class="social-login">
+        <button class="social-btn wechat">
+          <i class="fa fa-wechat"></i> 微信
+        </button>
+        <button class="social-btn weibo">
+          <i class="fa fa-weibo"></i> 微博
+        </button>
+        <button class="social-btn qq">
+          <i class="fa fa-qq"></i> QQ
+        </button>
+      </div>
+    </div>
+    
+    <!-- 协议声明 -->
+    <div class="agreement">
+      未注册过哔哩哔哩的手机号，我们将自动帮你注册账号<br>
+      登录或完成注册即代表同意 <a href="#">用户协议</a> 和 <a href="#">隐私政策</a>
+    </div>
+  </div>
+</div>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+ <script src="bili.js"></script>
+ <script type="module" src="data.js"></script>
+</body>
+
+</html>
